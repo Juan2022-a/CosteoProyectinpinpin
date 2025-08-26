@@ -1,0 +1,77 @@
+{
+    "arroz": {
+        "precio": 1.35,
+        "peso": 454.0,
+        "costo_por_gramo": 0.002973568281938326
+    },
+    "carne asada": {
+        "precio": 13.47,
+        "peso": 1362.0,
+        "costo_por_gramo": 0.009889867841409692
+    },
+    "papa": {
+        "precio": 3.48,
+        "peso": 1816.0,
+        "costo_por_gramo": 0.0019162995594713657
+    },
+    "frijoles": {
+        "precio": 8.4,
+        "peso": 2724.0,
+        "costo_por_gramo": 0.0030837004405286344
+    },
+    "cilantro": {
+        "precio": 1.09,
+        "peso": 20.0,
+        "costo_por_gramo": 0.05450000000000001
+    },
+    "tomates": {
+        "precio": 4.3,
+        "peso": 2270.0,
+        "costo_por_gramo": 0.001894273127753304
+    },
+    "cebolla": {
+        "precio": 4.0,
+        "peso": 2270.0,
+        "costo_por_gramo": 0.001762114537444934
+    },
+    "chimoool": {
+        "precio": 30.91,
+        "peso": 2500.0,
+        "costo_por_gramo": 0.012364
+    },
+    "casamiento": {
+        "precio": 6.06,
+        "peso": 2000.0,
+        "costo_por_gramo": 0.0030299999999999997
+    },
+    "harina fuerte": {
+        "precio": 3.0,
+        "peso": 1816.0,
+        "costo_por_gramo": 0.0016519823788546256
+    },
+    "azucar": {
+        "precio": 1.03,
+        "peso": 1000.0,
+        "costo_por_gramo": 0.00103
+    },
+    "levadura roja": {
+        "precio": 0.8,
+        "peso": 125.0,
+        "costo_por_gramo": 0.0064
+    },
+    "huevos": {
+        "precio": 5.2,
+        "peso": 1380.0,
+        "costo_por_gramo": 0.0037681159420289855
+    },
+    "manteca 10%": {
+        "precio": 2.25,
+        "peso": 800.0,
+        "costo_por_gramo": 0.0028125
+    },
+    "leche en polvo": {
+        "precio": 3.6,
+        "peso": 350.0,
+        "costo_por_gramo": 0.010285714285714285
+    }
+}

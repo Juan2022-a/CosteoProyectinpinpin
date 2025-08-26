@@ -73,5 +73,15 @@
         "precio": 3.6,
         "peso": 350.0,
         "costo_por_gramo": 0.010285714285714285
+    },
+    "aceite": {
+        "precio": 3.75,
+        "peso": 1816.0,
+        "costo_por_gramo": 0.002064977973568282
+    },
+    "asd": {
+        "precio": 12.0,
+        "peso": 459.0,
+        "costo_por_gramo": 0.026143790849673203
     }
 }

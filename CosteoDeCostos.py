@@ -527,7 +527,7 @@ class SistemaCosteo(QWidget):
             QMessageBox.critical(self, "Error", f"Error al cargar la tabla: {str(e)}")
 
     def agregar_producto(self):
-        """Agregar producto con mejor validación"""
+        """Agregar producto permitiendo ingresar libras o gramos"""
         try:
             nombre, ok = QInputDialog.getText(self, "Agregar Producto", "Nombre del producto:")
             if not ok or not nombre.strip():
@@ -543,12 +543,27 @@ class SistemaCosteo(QWidget):
             if not ok1 or precio <= 0:
                 QMessageBox.warning(self, "Error", "El precio debe ser mayor a cero.")
                 return
-                
-            peso, ok2 = QInputDialog.getDouble(self, "Agregar Producto", 
-                                             "Peso total (g):", 0.0, 0.01, 999999.99, 2)
-            if not ok2 or peso <= 0:
-                QMessageBox.warning(self, "Error", "El peso debe ser mayor a cero.")
+
+            # Preguntar por libras y gramos, cualquiera puede quedar en 0
+            peso_lb, ok_lb = QInputDialog.getDouble(self, "Agregar Producto", 
+                                                    "Peso total (libras): o dejar en 0 si desea usar gramos", 0.0, 0.0, 999999.99, 3)
+            peso_g, ok_g = QInputDialog.getDouble(self, "Agregar Producto", 
+                                                  "Peso total (gramos): o dejar en 0 si usó libras", 0.0, 0.0, 999999.99, 2)
+
+            # Si ambos en blanco o cero, error
+            if (peso_lb <= 0 and peso_g <= 0):
+                QMessageBox.warning(self, "Error", "Debe ingresar al menos libras o gramos.")
                 return
+
+            # Si solo libras, convertir a gramos
+            if peso_lb > 0 and peso_g <= 0:
+                peso = peso_lb * 454
+            # Si solo gramos, usar gramos
+            elif peso_g > 0 and peso_lb <= 0:
+                peso = peso_g
+            # Si ambos, sumar
+            else:
+                peso = peso_g + (peso_lb * 454)
 
             # Agregar producto
             self.productos[nombre] = {
@@ -559,7 +574,10 @@ class SistemaCosteo(QWidget):
             
             guardar_productos(self.productos)
             self.cargar_tabla()
-            QMessageBox.information(self, "Éxito", f"Producto '{nombre}' agregado correctamente.")
+            QMessageBox.information(
+                self, "Éxito", 
+                f"Producto '{nombre}' agregado correctamente.\nPeso total: {peso:.2f}g"
+            )
             
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error al agregar producto: {str(e)}")

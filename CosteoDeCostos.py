@@ -40,14 +40,14 @@ class SistemaCosteo(QWidget):
         self.setMinimumSize(1000, 700)
 
         # Scroll area principal para ventanas pequeñas
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        # scroll = QScrollArea()
+        # scroll.setWidgetResizable(True)
+        # scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        # scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         
         # Widget contenedor principal
         main_widget = QWidget()
-        scroll.setWidget(main_widget)
+        # scroll.setWidget(main_widget)
         
         # Layout principal
         main_layout = QVBoxLayout(main_widget)
@@ -73,7 +73,8 @@ class SistemaCosteo(QWidget):
         # Layout principal de la ventana
         window_layout = QVBoxLayout()
         window_layout.setContentsMargins(0, 0, 0, 0)
-        window_layout.addWidget(scroll)
+        window_layout.addWidget(main_widget)  # Agrega el widget principal directamente
+        # window_layout.addWidget(scroll)
         self.setLayout(window_layout)
 
         # Cargar datos iniciales
@@ -114,10 +115,9 @@ class SistemaCosteo(QWidget):
 
         # Tabla mejorada con mejor configuración
         self.tabla = QTableWidget()
-        self.tabla.setColumnCount(5)
+        self.tabla.setColumnCount(6)
         self.tabla.setHorizontalHeaderLabels([
-            "Producto", "Precio Total ($)", "Peso (g)", 
-            "Gramos a Usar", "Costo/Gramo ($)"
+            "Producto", "Precio Total ($)", "Peso (g)", "Peso (lb)", "Gramos a Usar", "Costo/Gramo ($)"
         ])
         self.tabla.setObjectName("productTable")
         self.tabla.setMinimumHeight(350)
@@ -133,7 +133,7 @@ class SistemaCosteo(QWidget):
         self.tabla.verticalHeader().setVisible(False)
         self.tabla.setShowGrid(True)
         self.tabla.setGridStyle(Qt.SolidLine)
-        self.tabla.verticalHeader().setDefaultSectionSize(45)
+        self.tabla.verticalHeader().setDefaultSectionSize(78)  # <-- Aumenta el alto de las filas
         
         tabla_layout.addWidget(self.tabla)
         return tabla_frame
@@ -466,7 +466,6 @@ class SistemaCosteo(QWidget):
             self.tabla.setEditTriggers(QTableWidget.AllEditTriggers)
             
             for fila, (nombre, datos) in enumerate(self.productos.items()):
-                # Validar datos antes de mostrar
                 if not all(key in datos for key in ["precio", "peso", "costo_por_gramo"]):
                     continue
                 
@@ -477,21 +476,26 @@ class SistemaCosteo(QWidget):
                 precio_item = QTableWidgetItem(f"{datos['precio']:.2f}")
                 self.tabla.setItem(fila, 1, precio_item)
 
-                # Peso (editable)
+                # Peso en gramos (editable)
                 peso_item = QTableWidgetItem(f"{datos['peso']:.2f}")
                 peso_item.setFlags(peso_item.flags() | Qt.ItemIsEditable)
                 self.tabla.setItem(fila, 2, peso_item)
 
+                # Peso en libras (calculado)
+                peso_lb = datos['peso'] / 454 if datos['peso'] else 0
+                peso_lb_item = QTableWidgetItem(f"{peso_lb:.3f}")
+                peso_lb_item.setFlags(peso_lb_item.flags() & ~Qt.ItemIsEditable)  # Solo lectura
+                self.tabla.setItem(fila, 3, peso_lb_item)
+
                 # Costo por gramo
                 costo_item = QTableWidgetItem(f"{datos['costo_por_gramo']:.5f}")
-                self.tabla.setItem(fila, 4, costo_item)
+                self.tabla.setItem(fila, 5, costo_item)
 
-                # Input para gramos a usar - MÁS GRANDE
+                # Input para gramos a usar
                 gramos_input = QLineEdit()
                 gramos_input.setPlaceholderText("0.00")
                 gramos_input.setStyleSheet("""
                     QLineEdit {
-                        
                         background-color: #494F55;
                         border: 2px solid #d1d5db;
                         border-radius: 6px;
@@ -511,13 +515,13 @@ class SistemaCosteo(QWidget):
                     }
                 """)
                 gramos_input.textChanged.connect(self.calcular_total)
-                self.tabla.setCellWidget(fila, 3, gramos_input)
+                self.tabla.setCellWidget(fila, 4, gramos_input)
 
             # Conectar eventos
             self.tabla.itemChanged.connect(self.actualizar_costo_por_gramo)
             
             # Calcular total inicial
-            QTimer.singleShot(100, self.calcular_total)  # Delay para asegurar que los widgets estén listos
+            QTimer.singleShot(100, self.calcular_total)
             
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error al cargar la tabla: {str(e)}")
@@ -681,7 +685,7 @@ class SistemaCosteo(QWidget):
                     continue
                 
                 # Obtener cantidad a usar
-                gramos_widget = self.tabla.cellWidget(fila, 3)
+                gramos_widget = self.tabla.cellWidget(fila, 4)
                 gramos = 0.0
                 
                 if gramos_widget:
@@ -708,7 +712,7 @@ class SistemaCosteo(QWidget):
                             
                             # Actualizar costo por gramo en la tabla
                             costo_item = QTableWidgetItem(f"{datos['costo_por_gramo']:.5f}")
-                            self.tabla.setItem(fila, 4, costo_item)
+                            self.tabla.setItem(fila, 5, costo_item)
                             
                 except (ValueError, ZeroDivisionError):
                     continue
@@ -754,7 +758,7 @@ class SistemaCosteo(QWidget):
     def actualizar_costo_por_gramo(self, item):
         """Actualizar costo por gramo cuando se edita el peso"""
         try:
-            if item.column() == 2:  # Columna de peso
+            if item.column() == 2:  # Columna de peso en gramos
                 fila = item.row()
                 nombre_item = self.tabla.item(fila, 0)
                 precio_item = self.tabla.item(fila, 1)
@@ -768,7 +772,6 @@ class SistemaCosteo(QWidget):
                         
                         if peso <= 0:
                             QMessageBox.warning(self, "Error", "El peso debe ser mayor a cero.")
-                            # Restaurar valor anterior
                             if nombre in self.productos:
                                 item.setText(str(self.productos[nombre]["peso"]))
                             return
@@ -786,14 +789,18 @@ class SistemaCosteo(QWidget):
                             
                             # Actualizar tabla
                             costo_item = QTableWidgetItem(f"{costo_por_gramo:.5f}")
-                            self.tabla.setItem(fila, 4, costo_item)
+                            self.tabla.setItem(fila, 5, costo_item)
+                            # Actualizar columna de libras
+                            peso_lb = peso / 454 if peso else 0
+                            peso_lb_item = QTableWidgetItem(f"{peso_lb:.3f}")
+                            peso_lb_item.setFlags(peso_lb_item.flags() & ~Qt.ItemIsEditable)
+                            self.tabla.setItem(fila, 3, peso_lb_item)
                             
                             guardar_productos(self.productos)
                             self.calcular_total()
                             
                     except ValueError:
                         QMessageBox.warning(self, "Error", "Ingrese un valor numérico válido.")
-                        # Restaurar valor anterior
                         if nombre in self.productos:
                             item.setText(str(self.productos[nombre]["peso"]))
                             
@@ -828,3 +835,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Error crítico al iniciar la aplicación: {str(e)}")
         sys.exit(1)
+
+

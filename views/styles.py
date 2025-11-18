@@ -1,12 +1,12 @@
 STYLE_SHEET = """
 QWidget {
-    background-color: #18181b;
-    font-family: 'Segoe UI', 'Arial', sans-serif;
-    font-size: 11pt;
-    color: #f3f4f6;
-}
-
-QScrollArea {
+            background-color: #18181b;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            font-size: 11pt;
+            color: #f3f4f6;
+        }
+        
+        QScrollArea {
             border: none;
             background-color: #18181b;
         }
@@ -239,4 +239,4 @@ QScrollArea {
         QScrollBar::handle:vertical:hover {
             background: #6366f1;
         }
-"""
+        """

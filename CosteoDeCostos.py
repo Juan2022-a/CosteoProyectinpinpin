@@ -155,7 +155,7 @@ class SistemaCosteo(QWidget):
         buttons_grid = QVBoxLayout(buttons_container)
         buttons_grid.setSpacing(12)
         
-        # Primera fila de botones
+        # Primera fila de botones en acciones rapidas ----------------------------------------
         btn_layout1 = QHBoxLayout()
         btn_layout1.setSpacing(15)
         
@@ -172,7 +172,7 @@ class SistemaCosteo(QWidget):
         btn_layout1.addWidget(self.btn_agregar)
         btn_layout1.addWidget(self.btn_eliminar)
         
-        # Segunda fila de botones
+        # Segunda fila de botones en acciones rapidas ----------------------------------------
         btn_layout2 = QHBoxLayout()
         btn_layout2.setSpacing(15)
         
@@ -458,7 +458,7 @@ class SistemaCosteo(QWidget):
         """
         self.setStyleSheet(estilo)
 
-    # --- Funciones CRUD corregidas ---
+    # --- Funciones CRUD corregidas --------------------------------------LOGICA-----------------------------------------------
     def cargar_tabla(self):
         """Cargar tabla con mejor manejo de errores"""
         try:
@@ -476,7 +476,7 @@ class SistemaCosteo(QWidget):
                 precio_item = QTableWidgetItem(f"{datos['precio']:.2f}")
                 self.tabla.setItem(fila, 1, precio_item)
 
-                # Peso en gramos (editable)
+                # Peso en gramos (editable) 
                 peso_item = QTableWidgetItem(f"{datos['peso']:.2f}")
                 peso_item.setFlags(peso_item.flags() | Qt.ItemIsEditable)
                 self.tabla.setItem(fila, 2, peso_item)
@@ -487,7 +487,7 @@ class SistemaCosteo(QWidget):
                 peso_lb_item.setFlags(peso_lb_item.flags() & ~Qt.ItemIsEditable)  # Solo lectura
                 self.tabla.setItem(fila, 3, peso_lb_item)
 
-                # Costo por gramo
+                # Costo por gramo (calculo)
                 costo_item = QTableWidgetItem(f"{datos['costo_por_gramo']:.5f}")
                 self.tabla.setItem(fila, 5, costo_item)
 
